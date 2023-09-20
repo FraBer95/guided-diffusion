@@ -30,8 +30,12 @@ def main():
     model, diffusion = create_model_and_diffusion(
         **args_to_dict(args, model_and_diffusion_defaults().keys())
     )
+    sd = dist_util.load_state_dict(args.model_path, map_location="cpu")
+    print(sd.keys())
     model.load_state_dict(
-        dist_util.load_state_dict(args.model_path, map_location="cpu")
+        sd, strict=False
+        # dist_util.load_state_dict(args.model_path, map_location="cpu")
+        # dist_util.load_state_dict(args.model_path, map_location=dist_util.dev())
     )
     model.to(dist_util.dev())
     if args.use_fp16:
